@@ -7,36 +7,34 @@ def hastuples(barcode):
     fizz = False  # has doubles
     buzz = False  # has triples
     checklist = []
-    print("Evaluating (for DOUBLES) barcode:  {}".format(barcode))
+    print("Evaluating barcode:  {}".format(barcode))
     for letter in barcode:
         checklist.append(letter)
+    checklist.append('ZXQN')
     checklist.sort()  # I'm not actually using the opportunity this presents. I probably should.
+
     # print("Built checklist:     {}".format(checklist))
     while True:
         try:
             found = checklist.pop(-1)
         except(IndexError):
-            # print("Finished looking in this one!")
+            print("Finished looking in this one!")
             break
         # print("Looking for {} in {}".format(found, checklist))
+
+        # === Begin checking for duplicates ===
         if found in checklist:
-            fizz = True
-            # print("Found {} in the list - removing it and searching for more".format(found))
-            checklist.remove(found)
-            if found in checklist:
-                print("Found triplicate {} in  {}".format(found, barcode))
-                fizz = False
+            if (len(checklist) - checklist.index(found)) > 1:
                 buzz = True
-                break
-            else:
-                print("{} was duplicate but not triplicate in {}".format(found, barcode))
+                checklist.remove(found)
+                checklist.remove(found)
+                print("Found triplicate {} in  {}".format(found, barcode))
+            elif (len(checklist) - checklist.index(found)) == 1:
                 fizz = True
-                buzz = False
-                break
-        else:
-            # print("{} was not a duplicate in {}".format(found, barcode))
-            fizz = False
-            buzz = False
+                checklist.remove(found)
+                print("{} was duplicate but not triplicate in {}".format(found, barcode))
+            else:
+                print("{} was not a duplicate in {}".format(found, barcode))
     return fizz, buzz
 
 
@@ -58,11 +56,13 @@ def main():
                     print("Barcode {} has doubles / total is now {}".format(barcode, doubles))
                 else:
                     doubles *= 1
+
                 if hastriples:
                     triples += 1
                     print("Barcode {} has triples / total is now {}".format(barcode, triples))
                 else:
                     triples *= 1
+
     inputfile.close()
     checksum = doubles * triples
     print("Found {} doubles and {} triples // Checksum is {}".format(doubles, triples, checksum))
