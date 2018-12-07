@@ -1,16 +1,29 @@
 #!/usr/bin/python
 # Solves (https://adventofcode.com/2018/day/2#part2) given input.txt in the same path
-from string import ascii_lowercase
-import binascii
-import unittest
 
 
-def binvalue(longstring):
-    bytesum = 0
-    for ascii_letter in longstring:
-        bytesum += int(ord(ascii_letter))
-    return bytesum
-
+def matchmaker(longstring1,longstring2):
+    matches = ""
+    mismatches = int(0)
+    if len(longstring1) != len(longstring2):
+        print("{} and {} FAIL - different lengths".format(longstring1, longstring2))
+        return None
+    for i in range(0, len(longstring1)):
+        if (mismatches <= 1) & (longstring1[i] == longstring2[i]):
+            matches += longstring1[i]
+        elif longstring1[i] != longstring2[i]:
+            mismatches += 1
+            matches += " "
+        elif mismatches > 1:
+            print("{} and {} FAIL - too many mismatches".format(longstring1, longstring2))
+        else:
+            print("Reached an unreachable segment - oh no")
+    if mismatches == 1:
+        print("{} and {} PASS - returning {}".format(longstring1, longstring2, matches))
+        return matches
+    elif mismatches == 0:
+        print("These strings are identical. FAIL")
+        return None
 
 
 def main():
@@ -21,20 +34,12 @@ def main():
         for lines in inputfile:
             barcodes.append(lines.rstrip())
         inputfile.close()
-    barcodes.sort()
-    scorelist = []
-    for barcode in barcodes:
-        scorelist.append(binvalue(barcode))
-    receipts = dict(zip(barcodes, scorelist))
-    for key, value in receipts:
-        # For each barcode
-        # Get a list of all barcodes whose scores are off by strictly one
-        # Pass primary and one of its candidates into "matchem(barcode1, barcode2)"
-        # Check the first letter of each
-        # if they match pop them into the tentative answer vector
-        # Catch one - and only one - off-by-one error
-        # Continue comparing until equality fails
-        # return an answer vector or None
+    for i in range(0, len(barcodes)):
+        for j in range(0, len(barcodes)):
+            matches = matchmaker(barcodes[i], barcodes[j])
+            if matches != None:
+                print("Found a matching string:\n{} AND\n{} SHARE\n{}".format(barcodes[i],barcodes[j], matches))
+                quit(0)
 
 
 if __name__ == "__main__":
