@@ -65,4 +65,6 @@ class SquareInch:
         elif self.isclaimed < 0:
             self.isclaimed = 0
             self.isdisputed = False
+        else:
+            print("WARN: relinquishing this claim has created problems at {}, {}".format(self.x, self.y))
 
