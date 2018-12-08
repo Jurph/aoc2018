@@ -30,7 +30,7 @@ class Claim:
 
 class SquareInch:
     """A square inch of the fabric the elves want to claim"""
-    def __init__(self, xcoordinate, ycoordinate, starting_claim=None):
+    def __init__(self, xcoordinate: int, ycoordinate: int, starting_claim=None):
         self.x = int(xcoordinate)
         self.y = int(ycoordinate)
         if not starting_claim:
@@ -62,7 +62,7 @@ class SquareInch:
         self.isclaimed -= 1
         if self.isclaimed > 1:
             self.isdisputed = True
-        elif self.isclaimed == 1 | self.isclaimed == 0:
+        elif (self.isclaimed == 1) | (self.isclaimed == 0):
             self.isdisputed = False
         elif self.isclaimed < 0:
             self.isclaimed = 0
@@ -73,14 +73,14 @@ class SquareInch:
 
 class TestCustomFunctions(unittest.TestCase):
 
-    def initialize_a_claim(self):
+    def test_initialize_a_claim(self):
         init_string = "#1 @ 258,327: 19x22"
         clem = Claim.create_claim_from_string(init_string)
         self.assertEqual(clem.x, 258)
         self.assertEqual(clem.y, 327)
         self.assertEqual(clem.area, 418)  # equals 19 x 22
 
-    def initialize_square_inch(self):
+    def test_initialize_square_inch(self):
         x = 258
         y = 327
         inchy = SquareInch(x, y)
@@ -89,7 +89,7 @@ class TestCustomFunctions(unittest.TestCase):
         self.assertEqual(inchy.isclaimed, 0)
         self.assertEqual(inchy.isdisputed, False)
 
-    def claim_and_relinquish(self):
+    def test_claim_and_relinquish(self):
         x = 260
         y = 330
         inchy = SquareInch(x, y)
@@ -101,6 +101,17 @@ class TestCustomFunctions(unittest.TestCase):
         inchy.claim()
         self.assertEqual(inchy.isclaimed, 2)
         self.assertEqual(inchy.isdisputed, True)
+        inchy.claim()
+        inchy.relinquish()
+        self.assertEqual(inchy.isclaimed, 2)
+        self.assertEqual(inchy.isdisputed, True)
+        inchy.relinquish()
+        self.assertEqual(inchy.isclaimed, 1)
+        self.assertEqual(inchy.isdisputed, False)
+        inchy.relinquish()
+        inchy.relinquish()
+        self.assertEqual(inchy.isclaimed, 0)
+        self.assertEqual(inchy.isdisputed, False)
 
 
 def get_input_array(userfile=None):
@@ -120,29 +131,34 @@ def get_input_array(userfile=None):
 def main():
     inputs = get_input_array('input.txt')
     claims_array = []
-    for i in range(0, len(inputs)+1):
+    x = 0
+    y = 0
+    fabric = {
+        (x, y): 0
+    }
+    for i in range(1, len(inputs)+1):
         print("i = {} // inputs[i] = {}".format(i, inputs[i-1]))
         claims_array.append(Claim.create_claim_from_string(str(inputs[i - 1])))
-    print("Got many claims including {}".format(claims_array[420].name))
     for this_claim in claims_array:
         for x in range(this_claim.x, this_claim.x + this_claim.width):
             for y in range(this_claim.y, this_claim.y + this_claim.height):
-                this_square = SquareInch(x, y)
-                this_square.claim()
-                print("[{}, {}] is claimed {} times".format(this_square.x, this_square.y, this_square.isclaimed))
+                if (x, y) not in fabric:
+                    fabric[(x, y)] = 1
+                elif (x, y) in fabric:
+                    fabric[(x, y)] += 1
+                else:
+                    print("Something weird is going on.")
     disputes = 0
-
-    for x in range(0, 1500):
-        for y in range(0, 1500):
-            if SquareInch(x, y).isdisputed is True:
-                disputes += 1
-                print("[{},{}] - Disputed with {} claims | TOTAL: {}".format(x, y, SquareInch(x, y).isclaimed, disputes))
-            elif not SquareInch(x, y).isdisputed:
-                print("[{},{}] - Available with {} claims | TOTAL: {}".format(x, y, SquareInch(x, y).isclaimed, disputes))
-            else:
-                print("[{},{}] - something strange going on here.".format(x, y))
-    print("Found {} disputes".format(disputes))
+    for coords, claims in fabric.items():
+        if claims > 1:
+            disputes += 1
+            print("Found {} competing claims at {} bringing total to {}".format(claims, coords, disputes))
+        else:
+            print("Found {} claim at {} bringing total to {}".format(claims, coords, disputes))
+    print("Found {} total disputes".format(disputes))
 
 
 if __name__ == "__main__":
     main()
+    unittest.main()
+
