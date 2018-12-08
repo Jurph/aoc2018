@@ -2,6 +2,7 @@
 # Solves Day 3, Part 1 of Advent of Code 2018
 # Details at https://adventofcode.com/2018/day/3
 # Input looks like:     #1 @ 258,327: 19x22
+import unittest
 
 
 class Claim:
@@ -68,6 +69,38 @@ class SquareInch:
             self.isdisputed = False
         else:
             print("WARN: relinquishing this claim has created problems at {}, {}".format(self.x, self.y))
+
+
+class TestCustomFunctions(unittest.TestCase):
+
+    def initialize_a_claim(self):
+        init_string = "#1 @ 258,327: 19x22"
+        clem = Claim.create_claim_from_string(init_string)
+        self.assertEqual(clem.x, 258)
+        self.assertEqual(clem.y, 327)
+        self.assertEqual(clem.area, 418)  # equals 19 x 22
+
+    def initialize_square_inch(self):
+        x = 258
+        y = 327
+        inchy = SquareInch(x, y)
+        self.assertEqual(inchy.x, x)
+        self.assertEqual(inchy.y, y)
+        self.assertEqual(inchy.isclaimed, 0)
+        self.assertEqual(inchy.isdisputed, False)
+
+    def claim_and_relinquish(self):
+        x = 260
+        y = 330
+        inchy = SquareInch(x, y)
+        self.assertEqual(inchy.isclaimed, 0)
+        self.assertEqual(inchy.isdisputed, False)
+        inchy.claim()
+        self.assertEqual(inchy.isclaimed, 1)
+        self.assertEqual(inchy.isdisputed, False)
+        inchy.claim()
+        self.assertEqual(inchy.isclaimed, 2)
+        self.assertEqual(inchy.isdisputed, True)
 
 
 def get_input_array(userfile=None):
