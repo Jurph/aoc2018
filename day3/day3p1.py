@@ -15,6 +15,7 @@ class Claim:
         self.width = int(width)
         self.height = int(height)
         self.area = int(width) * int(height)
+        self.isdisputed = False
 
     @classmethod
     def create_claim_from_string(cls, inputstring):
@@ -155,8 +156,20 @@ def main():
             print("Found {} competing claims at {} bringing total to {}".format(claims, coords, disputes))
         else:
             print("Found {} claim at {} bringing total to {}".format(claims, coords, disputes))
-    print("Found {} total disputes".format(disputes))
+    print("Found {} total disputes".format(disputes))  # Solves Day 3 part 1
 
+    #  Solves Day 3 part 2
+    for this_claim in claims_array:
+        for x in range(this_claim.x, this_claim.x + this_claim.width):
+            for y in range(this_claim.y, this_claim.y + this_claim.height):
+                if fabric[(x, y)] == 1:
+                    pass
+                elif fabric[(x, y)] > 1:
+                    this_claim.isdisputed = True
+                else:
+                    print("WARN: found an apparently unclaimed square")
+        if this_claim.isdisputed is False:
+            print("Claim #{} appears to be undisputed".format(this_claim.number))
 
 if __name__ == "__main__":
     main()
