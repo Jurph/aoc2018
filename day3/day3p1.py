@@ -34,6 +34,7 @@ class SquareInch:
         self.y = int(ycoordinate)
         if not starting_claim:
             self.isclaimed = int(0)
+            self.isdisputed = False
         else:
             self.isclaimed = int(starting_claim)
         if self.isclaimed > 1:
@@ -43,13 +44,14 @@ class SquareInch:
         else:
             print("WARN: Tenuous claim on square at {},{} - claim value purports to be {}".format(self.x, self.y, self.isclaimed))
             self.isdisputed = None
-        print("Created a SquareInch at ({},{}) with a claim of {} and dispute of {}".format(self.x, self.y, self.isclaimed, self.isdisputed))
+        #  print("Created a SquareInch at ({},{}) with a claim of {} and dispute of {}".format(
+        #  self.x, self.y, self.isclaimed, self.isdisputed))
 
     def claim(self):
         self.isclaimed += 1
         if self.isclaimed > 1:
             self.isdisputed = True
-        elif self.isclaimed == 1 | self.isclaimed == 0:
+        elif (self.isclaimed == 1) | (self.isclaimed == 0):
             self.isdisputed = False
         else:
             self.isclaimed = 0
@@ -94,16 +96,16 @@ def main():
             for y in range(this_claim.y, this_claim.y + this_claim.height):
                 this_square = SquareInch(x, y)
                 this_square.claim()
+                print("[{}, {}] is claimed {} times".format(this_square.x, this_square.y, this_square.isclaimed))
     disputes = 0
 
-    for x in range(0, 2000):
-        for y in range(0, 2000):
-            aproblem = SquareInch(x, y).isdisputed()
-            if aproblem:
-                print("[{},{}] - Disputed with {} claims".format(x, y, SquareInch(x, y).isclaimed))
+    for x in range(0, 1500):
+        for y in range(0, 1500):
+            if SquareInch(x, y).isdisputed is True:
                 disputes += 1
-            elif not aproblem:
-                print("[{},{}] - Available with {} claims".format(x, y, SquareInch(x, y).isclaimed))
+                print("[{},{}] - Disputed with {} claims | TOTAL: {}".format(x, y, SquareInch(x, y).isclaimed, disputes))
+            elif not SquareInch(x, y).isdisputed:
+                print("[{},{}] - Available with {} claims | TOTAL: {}".format(x, y, SquareInch(x, y).isclaimed, disputes))
             else:
                 print("[{},{}] - something strange going on here.".format(x, y))
     print("Found {} disputes".format(disputes))
