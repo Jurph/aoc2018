@@ -15,7 +15,7 @@ import datetime
 
 class TimeCard:
     def __init__(self, employee: int, main_DTG: datetime):
-        self.guardnumber = employee
+        self.employee = employee
         self.year_month_day = main_DTG.date
         self.time_of_day = main_DTG.time
         self.events = {
@@ -25,7 +25,7 @@ class TimeCard:
     @classmethod
     def initialize_timecard_from_guard_string(cls, inputstring):
         chunk1, chunk2 = inputstring.split("]")
-        main_DTG = datetime.fromtimestamp(chunk1[1:])  # Requires python 3.7 or newer
+        main_DTG = chunk1[1:].fromisoformat  # Requires python 3.7 or newer
         if "Guard" in chunk2:
             employee = int(chunk2[8:].split(" "))
         else:
@@ -53,27 +53,17 @@ def main():
     inputs = get_input_array('input.txt')
 
 
+class TestCustomFunctions(unittest.TestCase):
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def test_initialize_a_timecard(self):
+        init_string = "[1518-09-05 23:59] Guard #79 begins shift"
+        card = TimeCard.initialize_timecard_from_guard_string(init_string)
+        self.assertEqual(card.employee, 79)
+        self.assertEqual(card.year_month_day.year(), 1518)
+        self.assertEqual(card.year_month_day.month(), 9)
+        self.assertEqual(card.year_month_day.day(), 5)
 
 
 if __name__ == "__main__":
-    main()
     unittest.main()
+    main()
