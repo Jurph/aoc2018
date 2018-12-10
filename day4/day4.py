@@ -24,9 +24,16 @@ class TimeCard:
             (self.year_month_day, self.time_of_day): "START"
         }
 
+    def parse_input_string(self, inputstring):
+        raw_time_string, event_text = inputstring.split("]")
+        raw_time_string = str(raw_time_string[1:])
+        event_datetime = datetime.datetime.fromisoformat(raw_time_string)  # Requires python 3.7 or newer
+        return event_text, event_datetime
+
+
     @classmethod
     def initialize_timecard_from_guard_string(cls, inputstring):
-        event_text, shift_began_at = cls.parse_input_string(inputstring)
+        event_text, shift_began_at = parse_input_string(inputstring)
         if "Guard" in event_text:
             employee = int(str(event_text[8:].split(" ")[0]))
         else:
@@ -35,26 +42,20 @@ class TimeCard:
         new_timecard = cls(employee, shift_began_at)
         return new_timecard
 
-    def parse_input_string(self, inputstring):
-        raw_time_string, event_text = inputstring.split("]")
-        raw_time_string = str(raw_time_string[1:])
-        event_datetime = datetime.datetime.fromisoformat(raw_time_string)  # Requires python 3.7 or newer
-        return event_text, event_datetime
 
-    @classmethod
-    def add_a_nap_from_input_strings(cls, inputstring1, inputstring2):
-        start_event_text, nap_started_at = inputstring1.parse_input_string()
-        end_event_text, nap_ended_at = inputstring2.parse_input_string()
-        if ("falls asleep" in start_event_text) and ("wakes up" in end_event_text):
+def get_a_nap_from_input_strings(inputstring1, inputstring2):
+    start_event_text, nap_started_at = inputstring1.TimeCard.parse_input_string()
+    end_event_text, nap_ended_at = inputstring2.TimeCard.parse_input_string()
+    if ("falls asleep" in start_event_text) and ("wakes up" in end_event_text):
+        return nap_started_at, nap_ended_at
+    elif "falls asleep" not in start_event_text:
+        print("No start event in {}".format(inputstring1))
+    elif "wakes up" not in end_event_text:
+        print("No end event in {}".format(inputstring2))
+    else:
+        print("Well this is awkward.")
+        quit(1)
 
-            return nap_started_at, nap_ended_at
-        elif "falls asleep" not in start_event_text:
-            print("No start event in {}".format(inputstring1))
-        elif "wakes up" not in end_event_text:
-            print("No end event in {}".format(inputstring2))
-        else:
-            print("Well this is awkward.")
-            quit(1)
 
 def get_input_array(userfile=None):
     if userfile == None:
@@ -104,7 +105,7 @@ class TestCustomFunctions(unittest.TestCase):
         card = TimeCard.initialize_timecard_from_guard_string(inits[1])
         init_string1 = inits[2]
         init_string2 = inits[3]
-        nap_start, nap_end = add_a_nap_from_input_strings(init_string1, init_string2)
+        nap_start, nap_end = get_a_nap_from_input_strings(init_string1, init_string2)
 
 
 
